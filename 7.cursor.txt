@@ -1,0 +1,57 @@
+7.cursor
+
+CREATE TABLE student (
+    Rollno INT PRIMARY KEY,
+    Name VARCHAR(50)
+);
+
+CREATE TABLE n_student (
+    Rollno INT PRIMARY KEY,
+    Name VARCHAR(50)
+);
+
+INSERT INTO student (Rollno, Name) VALUES (1, 'John Doe');
+INSERT INTO student (Rollno, Name) VALUES (2, 'Jane Smith');
+
+
+Procedure
+DROP PROCEDURE IF EXISTS merge_Data;
+DELIMITER //
+
+CREATE PROCEDURE merge_Data(IN newRollno INTEGER)
+BEGIN
+    DECLARE S_Roll INTEGER;
+    DECLARE row_Count INTEGER DEFAULT 0;
+    DECLARE terminate BOOLEAN DEFAULT FALSE;
+
+    DECLARE Stud_detail CURSOR FOR 
+    SELECT Rollno FROM student WHERE Rollno = newRollno;
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET terminate = TRUE;
+    
+    OPEN Stud_detail;
+
+    getStud: LOOP
+        FETCH Stud_detail INTO S_Roll;
+
+        IF NOT EXISTS (SELECT * FROM n_student WHERE Rollno = S_Roll) THEN
+            INSERT INTO n_student SELECT * FROM student WHERE Rollno = S_Roll;
+            SET row_Count = row_Count + 1;
+        END IF;
+
+        IF terminate = TRUE THEN
+            LEAVE getStud;
+        END IF;
+    END LOOP getStud;
+
+    CLOSE Stud_detail;
+
+    SELECT CONCAT('RECORDS MERGED, ', row_Count, ' row(s) affected') AS Message;
+END //
+DELIMITER ;
+
+SOURCE /path/to/ass6.sql;
+
+CALL merge_Data(1);
+
+SELECT * FROM n_student;

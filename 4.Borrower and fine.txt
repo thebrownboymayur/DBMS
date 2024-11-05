@@ -1,0 +1,57 @@
+4.Borrower and fine
+
+CREATE TABLE Borrower (
+    Roll_no INT PRIMARY KEY,
+    Name VARCHAR(50),
+    DateofIssue DATE,
+    NameofBook VARCHAR(50),
+    Status CHAR(1) CHECK (Status IN ('I', 'R'))  -- I = Issued, R = Returned
+);
+
+CREATE TABLE Fine (
+    Roll_no INT,
+    Date DATE,
+    Amt DECIMAL(10, 2),
+    FOREIGN KEY (Roll_no) REFERENCES Borrower(Roll_no)
+);
+
+INSERT INTO Borrower (Roll_no, Name, DateofIssue, NameofBook, Status) VALUES
+(1, 'Alice', '2024-10-15', 'DBMS', 'I'),          
+(2, 'Bob', '2024-09-25', 'Data Structures', 'I'), 
+(3, 'Charlie', '2024-10-25', 'Algorithms', 'I'),  
+(4, 'David', '2024-10-10', 'Networking', 'I'),     
+(5, 'Eve', '2024-09-30', 'Operating Systems', 'I'), 
+(6, 'Frank', '2024-10-29', 'Software Engineering', 'I'), 
+(7, 'Grace', '2024-10-20', 'Computer Architecture', 'I'), 
+(8, 'Heidi', '2024-08-15', 'Artificial Intelligence', 'I'); 
+
+procedure
+DELIMITER //
+CREATE PROCEDURE BookFine(roll_new INT, book_name VARCHAR(30))
+BEGIN
+    DECLARE X INT;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND
+    BEGIN
+        SELECT CONCAT('ROLL NO ', roll_new, ' NOT FOUND') AS NoRecord;
+    END;
+
+    SELECT DATEDIFF(CURDATE(), DateofIssue) INTO X 
+    FROM Borrower 
+    WHERE Roll_no = roll_new;
+
+    IF (X > 15 AND X <= 30) THEN
+        INSERT INTO Fine VALUES (roll_new, CURDATE(), (X * 5));
+    ELSEIF (X > 30) THEN
+        INSERT INTO Fine VALUES (roll_new, CURDATE(), (X * 50));
+    END IF;
+
+    UPDATE Borrower SET Status = 'R' WHERE Roll_no = roll_new;
+END //
+DELIMITER ;
+
+CALL BookFine(1, 'DBMS');                    
+CALL BookFine(2, 'Data Structures');         
+CALL BookFine(3, 'Algorithms'); 
+
+SELECT * FROM Fine;
+select * from borrower;

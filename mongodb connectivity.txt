@@ -1,0 +1,92 @@
+Step 1: Create MySQL Database and Table
+Open MySQL Command Line or Workbench.
+
+Log in with your credentials.
+
+Create a database and a table:
+
+CREATE DATABASE student_db;
+USE student_db;
+CREATE TABLE student (
+    rollno INT PRIMARY KEY,
+    name VARCHAR(100)
+);
+
+check java version
+java -version
+
+Create a New Java Project
+Open your IDE (e.g., Eclipse).
+Create a new Java project:
+Go to File > New > Java Project.
+Name your project (e.g., JdbcExample).
+Ensure the execution environment is set to JavaSE-11
+
+ Create a New Class for JDBC
+Right-click on your project in the Project Explorer.
+Select New > Class.
+Name the class Jdbc.
+If you see an error for import java.sql.*;, delete the module-info.java file if it exists.
+
+Create MySQL User and Grant Privileges
+In your MySQL command line or Workbench, run the following commands:
+CREATE USER 'new_user'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON *.* TO 'new_user'@'localhost';
+FLUSH PRIVILEGES;
+
+Configure Build Path in Eclipse
+Right-click on your project and go to Build Path > Configure Build Path.
+Remove any JavaSE-21 library from the Module Path if it exists.
+Under the Modulepath section, click Add Library > JRE System Library.
+Select Execution Environment as JavaSE-11.
+Click on Classpath tab:
+Click on Add External JARs....
+Navigate to where you downloaded MySQL Connector/J (e.g., mysql-connector-java-8.1.0.jar) and add it.
+Click Apply and Close.
+
+Write JDBC Code
+Here’s a basic example code for Jdbc.java that connects to the MySQL database:
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+public class Jdbc {
+    public static void main(String[] args) {
+        String url = "jdbc:mysql://localhost:3306/student_db"; // Database URL
+        String user = "new_user"; // User
+        String password = "password"; // Password
+        
+        Connection conn = null;
+
+        try {
+            // Establish connection
+            conn = DriverManager.getConnection(url, user, password);
+            System.out.println("Connected to the database successfully!");
+
+            // Sample Insert Query
+            String insertSQL = "INSERT INTO student (rollno, name) VALUES (?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(insertSQL);
+            pstmt.setInt(1, 1); // Roll number
+            pstmt.setString(2, "John Doe"); // Name
+            pstmt.executeUpdate();
+            System.out.println("Record inserted successfully!");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+}
+
+
+Run the Program
+Right-click on the Jdbc class and select Run As > Java Application.
+Check the console output for connection success and the record insertion message.
+

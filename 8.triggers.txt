@@ -1,0 +1,81 @@
+8.triggers
+CREATE TABLE Library (
+    book_id INT PRIMARY KEY,
+    book_name VARCHAR(100),
+    author_name VARCHAR(100),
+    publish_year INT
+);
+
+CREATE TABLE Library_Audit (
+    audit_id INT AUTO_INCREMENT PRIMARY KEY,
+    book_id INT,
+    book_name VARCHAR(100),
+    author_name VARCHAR(100),
+    publish_year INT,
+    action_type VARCHAR(10),
+    action_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Trigger to track updates in Library table
+DELIMITER $
+CREATE TRIGGER library_update AFTER UPDATE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (book_id, book_name, author_name, publish_year, action_type)
+    VALUES (OLD.book_id, OLD.book_name, OLD.author_name, OLD.publish_year, 'UPDATE');
+END;
+$
+DELIMITER ;
+
+-- Trigger to track deletions from Library table
+DELIMITER $
+CREATE TRIGGER library_delete AFTER DELETE ON Library
+FOR EACH ROW
+BEGIN
+    INSERT INTO Library_Audit (book_id, book_name, author_name, publish_year, action_type)
+    VALUES (OLD.book_id, OLD.book_name, OLD.author_name, OLD.publish_year, 'DELETE');
+END;
+$
+DELIMITER ;
+
+-- Trigger to validate data before inserting (ensuring publish year is not below 1900)
+DELIMITER $
+CREATE TRIGGER library_before_insert BEFORE INSERT ON Library
+FOR EACH ROW
+BEGIN
+    IF NEW.publish_year < 1900 THEN
+        SET NEW.publish_year = 1900;
+    END IF;
+END;
+$
+DELIMITER ;
+
+SOURCE /path/to/ass7.sql;
+
+
+INSERT INTO Library (book_id, book_name, author_name, publish_year) 
+VALUES (1, 'Old Book', 'Author A', 1890);
+
+UPDATE Library SET book_name = 'Updated Book' WHERE book_id = 1;
+
+
+DELETE FROM Library WHERE book_id = 1;
+
+SELECT * FROM Library_Audit;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

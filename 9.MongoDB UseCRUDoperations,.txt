@@ -1,0 +1,50 @@
+MongoDB UseCRUDoperations,
+SAVE method, logical operators etc.).
+
+use dhanashri;
+db.createCollection("student");
+
+Insert Documents
+db.student.insert({roll: 1, name: "Anuja", marks: 10});
+db.student.insert({roll: 2, name: "Akash", marks: 100});
+db.student.insert({roll: 3, name: "Arav", marks: 100});
+db.student.insert({roll: 4, name: "Asha", marks: 100});
+db.student.insert({roll: 7, name: "Anvi"});
+db.student.insert({roll: 7, name: {first: "BHUMI", last: "AHER"}, marks: 90});
+
+Find All Documents
+db.student.find().pretty();
+
+Find Documents with Specific Criteria
+db.student.find({roll: 2}).pretty(); // Find student with roll 2
+db.student.find({marks: {$eq: 60}}).pretty(); // Find students with marks equal to 60
+db.student.find({marks: {$gt: 20, $lt: 100}}).pretty(); // Find students with marks between 20 and 100
+db.student.find({name: {$in: ["Anuja", "Akash"]}}).pretty(); // Find students named Anuja or Akash
+
+Distinct Values
+db.student.distinct("marks");
+
+Update Documents
+db.student.update({roll: 2}, {$set: {marks: 60}}); // Update marks for roll 2
+db.student.update({roll: 7}, {$set: {name: "Anvi"}});
+
+Using Save Method
+db.student.save({roll: 5, name: "Raj", marks: 85}); // Insert if not exists or update if exists
+
+Delete
+Remove Documents
+db.student.remove({roll: 3}); // Remove student with roll 3
+
+Using $or Operator
+db.student.find({$or: [{marks: {$gte: 10}}, {marks: {$lte: 60}}]}).pretty();
+
+Using $nin and $in
+db.student.find({name: {$nin: ["Amit", "Suman"]}}).pretty(); // Names not in the list
+db.student.find({name: {$in: ["Amit", "Suman"]}}).pretty(); // Names in the list
+
+Using Other Comparisons
+db.student.find({salary: {$lt: 2000}}).pretty(); // Find contributors with salary less than 2000
+db.student.find({branch: {$eq: "CSE"}}).pretty(); // Find contributors in CSE branch
+db.student.find({branch: {$ne: "CSE"}}).pretty(); // Find contributors not in CSE branch
+db.student.find({salary: {$gt: 1000}}).pretty(); // Find contributors with salary greater than 1000
+db.student.find({salary: {$lte: 1000}}).pretty(); // Find contributors with salary less than or equal to 1000

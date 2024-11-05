@@ -1,0 +1,91 @@
+SQL Queries:
+a. Design and Develop SQLDDL statements which demonstrate the use of SQL objects such
+as Table, View, Index, Sequence, Synonym, different constraints etc.
+b. Write at least 10 SQL queries on the suitable database application using SQL DML
+statements.
+c. Note: Instructor will design the queries which demonstrate the use of concepts like Insert,
+Select, Update, Delete with operators, functions, and set operator etc.
+
+Table Creation Statement 
+
+CREATE TABLE Employees (
+    employee_id INT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    department VARCHAR(50) CHECK (department IN ('IT', 'HR', 'Finance', 'Sales')),
+    salary DECIMAL(10, 2) DEFAULT 0,
+    hire_date DATE,  -- No default value set for hire_date
+    UNIQUE (first_name, last_name)
+);
+
+INSERT INTO Employees (employee_id, first_name, last_name, department, salary, hire_date) VALUES
+(1, 'John', 'Doe', 'IT', 60000, CURRENT_DATE);
+(2, 'Jane', 'Smith', 'HR', 55000, '2020-03-10'),
+(3, 'Alex', 'Johnson', 'Finance', 70000, '2019-09-22'),
+(4, 'Emily', 'Davis', 'Sales', 80000, '2021-02-18'),
+(5, 'David', 'Duck', 'IT', 40000, '2020-06-05');
+
+
+create view
+CREATE VIEW EmpSyn AS
+SELECT employee_id, first_name, last_name
+FROM Employees;
+view command to see the table
+SELECT * FROM EmpSyn;
+
+
+create an index 
+CREATE INDEX idx_last_name ON Employees (last_name);  
+SELECT *
+FROM Employees
+WHERE last_name = 'Doe';
+
+CREATE INDEX idx_department ON Employees(department);
+
+
+view index 
+SHOW INDEX FROM Employees;
+
+synonymous
+CREATE VIEW EmpSyn AS SELECT * FROM Employees;
+
+10 quries
+SELECT * FROM Employees;
+SELECT * FROM Employees WHERE salary > 50000; 
+
+UPDATE Employees
+SET department = 'Marketing'
+WHERE employee_id = 3;
+
+DELETE FROM Employees WHERE employee_id = 1;
+
+ALTER TABLE Employees ADD COLUMN bonus DECIMAL(10, 2) DEFAULT 0;
+ALTER TABLE Employees MODIFY COLUMN salary DECIMAL(12, 2);
+
+ALTER TABLE Employees
+MODIFY COLUMN salary DECIMAL(12, 2);
+
+date function
+DELETE FROM Employees
+WHERE hire_date < '2020-01-01';
+
+operator like
+DELETE FROM Employees
+WHERE last_name LIKE 'D%';
+-----------------------------------------------------
+to use set operator
+
+INSERT INTO Employees (employee_id, first_name, last_name, department, salary) VALUES
+(1, 'John', 'Doe', 'IT', 60000),
+(2, 'Jane', 'Smith', 'HR', 55000),
+(3, 'Alex', 'Johnson', 'Finance', 70000);
+
+INSERT INTO FormerEmployees (employee_id, termination_date) VALUES
+(2, '2022-01-15'),
+(3, '2022-05-20');
+
+DELETE FROM Employees
+WHERE employee_id IN (
+    SELECT employee_id
+    FROM FormerEmployees
+);

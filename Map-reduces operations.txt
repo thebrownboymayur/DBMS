@@ -1,0 +1,30 @@
+Map-reduces operations:
+Start your MongoDB shell by typing mongo in your terminal.
+
+Select/Create the Database:
+use dhanashri
+
+Insert Sample Data (if not already inserted):
+db.createCollection("employee")
+db.employee.insertMany([
+    { emp_id: 1, emp_name: "Anuja", dept_name: "comp", salary: 20000, gender: "female" },
+    { emp_id: 2, emp_name: "Khushi", dept_name: "comp", salary: 40000, gender: "female" },
+    { emp_id: 3, emp_name: "Jayesh", dept_name: "it", salary: 30000, gender: "male" },
+    { emp_id: 4, emp_name: "Lokesh", dept_name: "entc", salary: 30000, gender: "male" },
+    { emp_id: 5, emp_name: "Bhushan", dept_name: "entc", salary: 90000, gender: "male" },
+    { emp_id: 6, emp_name: "Manisha", dept_name: "it", salary: 90000, gender: "female" }
+])
+
+Define and Execute Map and Reduce Functions in One Go
+db.employee.mapReduce(
+    function() {
+        emit(this.dept_name, this.salary);
+    },
+    function(keyDept, values) {
+        return Array.sum(values);
+    },
+    { out: "total_salary_by_dept" }
+)
+
+View the Results: After executing the MapReduce command, you can check the results:
+db.total_salary_by_dept.find().pretty()

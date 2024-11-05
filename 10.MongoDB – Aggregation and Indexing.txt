@@ -1,0 +1,45 @@
+Open your terminal or command prompt.
+mongo
+
+use dhanashri
+
+Create the Collection
+db.createCollection("employee")
+
+Insert Employee Records: Instead of inserting records one by one, you can insert multiple records at once using insertMany
+db.employee.insertMany([
+    { emp_id: 1, emp_name: "Anuja", dept_name: "comp", salary: 20000, gender: "female" },
+    { emp_id: 2, emp_name: "Khushi", dept_name: "comp", salary: 40000, gender: "female" },
+    { emp_id: 3, emp_name: "Jayesh", dept_name: "it", salary: 30000, gender: "male" },
+    { emp_id: 4, emp_name: "Lokesh", dept_name: "entc", salary: 30000, gender: "male" },
+    { emp_id: 5, emp_name: "Bhushan", dept_name: "entc", salary: 90000, gender: "male" },
+    { emp_id: 6, emp_name: "Manisha", dept_name: "it", salary: 90000, gender: "female" }
+])
+
+View the Inserted Records:
+db.employee.find().pretty()
+
+Perform Aggregation Queries:
+db.employee.aggregate([
+    { $group: { _id: "$dept_name", total_emp: { $sum: 1 } } }
+])
+
+Calculate Total Salary by Department:
+db.employee.aggregate([
+    { $group: { _id: "$dept_name", total_sal: { $sum: "$salary" } } }
+])
+
+Filter and Group by Gender:
+db.employee.aggregate([
+    { $match: { gender: "male" } },
+    { $group: { _id: "$dept_name", total_sal: { $sum: "$salary" } } }
+])
+
+Create Indexes:
+db.employee.createIndex({ emp_id: 1 })
+
+Check Existing Indexes:
+db.employee.getIndexes()
+
+Drop an Index if Needed:
+db.employee.dropIndex({ emp_id: 1 })

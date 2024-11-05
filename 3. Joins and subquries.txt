@@ -1,0 +1,55 @@
+creating tables 
+CREATE TABLE Employees (
+    employee_id INT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    department_id INT,
+    salary DECIMAL(10, 2),
+    hire_date DATE,
+    UNIQUE (first_name, last_name)
+);
+
+INSERT INTO Employees (employee_id, first_name, last_name, department_id, salary, hire_date) VALUES
+(1, 'John', 'Doe', 1, 60000, '2021-05-15'),
+(2, 'Jane', 'Smith', 2, 55000, '2020-03-10'),
+(3, 'Alex', 'Johnson', 3, 70000, '2019-09-22'),
+(4, 'Emily', 'Davis', 1, 80000, '2021-02-18'),
+(5, 'David', 'Duck', NULL, 40000, '2020-06-05');
+
+
+CREATE TABLE Departments (
+    department_id INT PRIMARY KEY,
+    department_name VARCHAR(50) NOT NULL
+);
+
+INSERT INTO Departments (department_id, department_name) VALUES
+(1, 'IT'),
+(2, 'HR'),
+(3, 'Finance'),
+(4, 'Sales');
+
+SELECT E.first_name, D.department_name FROM Employees E INNER JOIN Departments D ON E.department_id = D.department_id;
+An Inner Join returns only the rows that have matching values in both tables involved in the join. If there is no match, the rows are excluded from the result set.
+
+SELECT E.first_name, D.department_name
+FROM Employees E
+LEFT JOIN Departments D ON E.department_id = D.department_id;
+An Outer Join returns all rows from one table and the matched rows from another table.
+
+SELECT E.first_name, D.department_name
+FROM Employees E
+FULL OUTER JOIN Departments D ON E.department_id = D.department_id;
+combines both results
+
+subquery
+SELECT department_id, (SELECT COUNT(*) FROM Employees WHERE department_id = D.department_id) AS employee_count FROM Departments D;
+
+
+Single-Row Sub-Query: Returns only one row and one column.
+SELECT first_name FROM Employees WHERE salary = (SELECT MAX(salary) FROM Employees);
+
+Multiple-Row Sub-Query: Returns multiple rows.
+SELECT first_name FROM Employees WHERE department_id IN (SELECT department_id FROM Departments WHERE department_name = 'IT');
+
+Create a view for employee salaries:
+CREATE VIEW EmployeeSalaries AS SELECT first_name, last_name, salary FROM Employees;

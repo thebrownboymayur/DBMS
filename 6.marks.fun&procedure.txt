@@ -1,0 +1,85 @@
+6.marks.fun&procedure
+
+CREATE TABLE Stud_Marks (
+    Roll_no INT PRIMARY KEY,
+    Name VARCHAR(25),
+    Total_Marks INT
+);
+
+
+CREATE TABLE Result (
+    Roll_no INT,
+    Name VARCHAR(25),
+    Class VARCHAR(25),
+    FOREIGN KEY (Roll_no) REFERENCES Stud_Marks(Roll_no)
+);
+
+INSERT INTO Stud_Marks (Roll_no, Name, Total_Marks) VALUES
+(1, 'Alice', 1200),
+(2, 'Bob', 850),
+(3, 'Charlie', 900),
+(4, 'David', 980);
+
+
+Create the Function for Classification
+Create a new SQL file named Ass5b.sql
+
+DROP FUNCTION IF EXISTS Func_Class;
+DELIMITER //
+
+CREATE FUNCTION Func_Class(Marks INT)
+RETURNS VARCHAR(25) NO SQL
+BEGIN
+    DECLARE S_result VARCHAR(25);
+    
+    IF (Marks >= 990 AND Marks <= 1500) THEN
+        SET S_result = 'DISTINCTION';
+    ELSEIF (Marks >= 900 AND Marks <= 989) THEN
+        SET S_result = 'FIRST CLASS';
+    ELSEIF (Marks >= 825 AND Marks <= 899) THEN
+        SET S_result = 'HIGHER SECOND CLASS';
+    ELSE
+        SET S_result = 'PASS CLASS';  
+    END IF;
+
+    RETURN S_result;
+END;
+//
+
+DELIMITER ;
+
+SOURCE Ass5b.sql;
+
+Create the Stored Procedure
+
+DROP PROCEDURE IF EXISTS proc_Class;
+DELIMITER //
+
+CREATE PROCEDURE proc_Class(IN new_Roll INT)
+BEGIN
+    DECLARE T_Marks INT;
+    DECLARE S_Name VARCHAR(25);
+    DECLARE S_result VARCHAR(25);
+
+    DECLARE EXIT HANDLER FOR NOT FOUND
+    BEGIN
+        SELECT CONCAT('ROLLNO ', new_Roll, ' NOT FOUND') AS NoRecord;
+    END;
+
+    SELECT Name, Total_Marks INTO S_Name, T_Marks
+    FROM Stud_Marks 
+    WHERE Roll_no = new_Roll;
+
+    SET S_result = Func_Class(T_Marks);
+
+    INSERT INTO Result VALUES (new_Roll, S_Name, S_result);
+END;
+//
+
+DELIMITER ;
+
+SOURCE Ass5a.sql;
+
+CALL proc_Class(1);
+
+SELECT * FROM Result;
